@@ -1,2 +1,2 @@
 # Linux-Scripts
- Conjunto de scripts enfocados en linux con bspwn
+ Conjunto de scripts enfocados en linux
