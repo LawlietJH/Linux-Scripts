@@ -9,6 +9,7 @@
 # [+] Examples:
 #
 #	bgfill FileName
+#	bgfill -f FileName
 
 AUTHOR="LawlietJH"
 SCRIPT="BgFill"
@@ -31,6 +32,7 @@ if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 	if [[ $1 == "-f" || $1 == "--file" || $1 == "--filename" ]]; then
 		FILE=$2
 	fi
+	#-------------------------------------------------------------------
 	pwd=$(pwd)
 	if [[ -f "$pwd/$FILE" ]]; then
 		sed -i "s|feh --bg-fill .*|feh --bg-fill $(pwd)/$FILE|g" /home/eny/.config/bspwm/bspwmrc

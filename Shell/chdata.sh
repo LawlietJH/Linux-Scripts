@@ -1,14 +1,15 @@
 #! /bin/bash
 #
-# [+] By: LawlietJH - chdata v1.0
+# [+] By: LawlietJH - ChData v1.0
 #
 # [+] Desc: Cambia el propietario y grupo de uno o varios archivos.
 #
 # [+] Usages:
+#
 #	chdata UserName FileName
 #	chdata -u UserName -f FileName
 
-function setUser () {
+function setUser() {
 	#chmod +x ${@:2}
 	chown -R $1 ${@:2}
 	chgrp -R $1 ${@:2}
@@ -18,19 +19,25 @@ function setUser () {
 	done
 }
 
-RE="\033[1;31m"
-GR="\033[1;32m"
-BL="\033[1;34m"
-CY="\033[1;36m"
-NC="\033[0m"
+AUTHOR="LawlietJH"
+SCRIPT="ChData"
+VERSION="v1.0"
+DGR="\x1b[0;32m"
+DBL="\x1b[0;34m"
+DCY="\x1b[0;36m"
+RE="\x1b[1;31m"
+GR="\x1b[1;32m"
+BL="\x1b[1;34m"
+CY="\x1b[1;36m"
+NC="\x1b[0m"
 OK="${CY}[${GR}+${CY}]${NC}"
 ER="${BL}[${RE}!${BL}]${NC}"
 
 echo
 
-if [[ $1 != "-h" && $1 != "--help" ]]; then
+if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 	if [[ $EUID == "1000" ]]; then
-		echo " $ER Necesitas Permisos de administrador..."
+		echo -e " $ER Necesitas Permisos de administrador..."
 	else
 		USER=""
 		FILE=""
@@ -49,24 +56,54 @@ if [[ $1 != "-h" && $1 != "--help" ]]; then
 				FILE=$1
 			fi
 		fi
-		#--------------------------------------------------------------------------
-		if [[ -n $USER && -n $FILE ]]; then
-			if [[ -n $(grep $USER /etc/passwd) ]]; then
+		#---------------------------------------------------------------
+		if [[ -n $(grep $USER /etc/passwd) ]]; then
+			if [[ -f $FILE ]]; then
 				setUser $USER $FILE
 			else
-				echo " $ER El Usuario ${CY}'$USER'${NC} No existe."
+				echo " $ER El Archivo ${CY}'$FILE'${NC} No existe."
 			fi
 		else
-			echo -e " $OK ${CY}Usage${BL}:${NC}"
-			echo -e "	${CY}chdata ${BL}UserName ${GR}FileName${NC}"
-			echo -e "	${CY}chdata ${BL}-${CY}u ${BL}UserName ${BL}-${CY}f ${GR}FileName${NC}"
+			echo " $ER El Usuario ${CY}'$USER'${NC} No existe."
 		fi
 	fi
+elif [[ $1 == "-v" || $1 == "--version" ]]; then
+	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
+	VERSION=$(echo $VERSION | sed "s|v|${DCY}v${CY}|g; s|\.|${DCY}\.${CY}|g")
+	VER=$(echo $VER | sed "s|: |${DGR}:${NC} |g; s|-|${DCY}-${NC}|g")
+	echo -e " $OK $VER${NC} $VERSION"
 else
-	# Help
-	echo -e " $OK ${CY}Usage${BL}:${NC}"
-	echo -e "	${CY}chdata ${BL}UserName ${GR}FileName${NC}"
-	echo -e "	${CY}chdata ${BL}-${CY}u ${BL}UserName ${BL}-${CY}f ${GR}FileName${NC}"
+	# Content:
+	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
+	DESC="${GR}Desc: Cambia el propietario y grupo de uno o varios archivos."
+	USAGE="${GR}Usage: ${CY}chdata${NC} [-h|-v] | [-u ${DCY}UserName${NC}] [-f ${DCY}FileName${NC}]"
+	OPTIONS="${GR}Options:"
+	EXAMPLE="${GR}Examples:"
+	# Replaces:
+	VERSION=$(echo $VERSION | sed "s|v|${DCY}v${CY}|g; s|\.|${DCY}\.${CY}|g")
+	VER=$(echo $VER | sed "s|: |${DGR}:${NC} |g; s|-|${DCY}-${NC}|g")
+	DESC=$(echo $DESC | sed "s|: |${DGR}:${NC} ${BL}|g; s|-'|${DCY}'${CY}|g; s|'-|${DCY}'${BL}|g; s|\.|${DCY}\.${BL}|g")
+	USAGE=$(echo $USAGE | sed "s| \[| ${DBL}\[${NC}|g; s|]|${DBL}]${NC}|g; s|: |${DGR}:${NC} |g; s|-|${DCY}-${CY}|g; s|\||${DBL}\|${NC}|g")
+	OPTIONS=$(echo $OPTIONS | sed "s|:|${DGR}:|g")
+	EXAMPLE=$(echo $EXAMPLE | sed "s|:|${DGR}:|g")
+	# Print:
+	echo -e " $OK $VER${NC} $VERSION"
+	echo
+	echo -e " $OK $DESC${NC}"
+	echo
+	echo -e " $OK $USAGE${NC}"
+	echo
+	echo -e " $OK $OPTIONS${NC}"
+	echo
+	echo -e "	-h              ${BL}Muestra este mensaje de ayuda.${NC}"   | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-v              ${BL}Muestra la version del script.${NC}"   | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-u, --user      ${BL}Selecciona un nombre de usuario.${NC}" | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-f, --file      ${BL}Selecciona un archivo.${NC}"           | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo
+	echo -e " $OK $EXAMPLE${NC}"
+	echo
+	echo -e "	${CY}chdata ${DCY}username${NC} ${DCY}filename${NC}          ${BL}Cambia el propietario y grupo de uno o varios archivos.${NC}"
+	echo -e "	${CY}chdata -u ${DCY}username${NC} -f ${DCY}filename${NC}    ${BL}Cambia el propietario y grupo de uno o varios archivos.${NC}" | sed "s|-|${DCY}-${CY}|g"
 fi
 
 echo

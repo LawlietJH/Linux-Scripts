@@ -31,8 +31,14 @@ if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 		SAM=$1
 		SYS=$2
 	fi
-	if [[ -n $SAM && -n $SYS ]]; then
-		impacket-secretsdump -sam $SAM -system $SYS LOCAL
+	#-------------------------------------------------------------------
+	if [[ -f $SAM ]]; then
+		if [[ -f $SYS ]]; then
+			impacket-secretsdump -sam $SAM -system $SYS LOCAL
+		else
+			echo " $ER El Archivo ${CY}'$SYS'${NC} No existe."
+	else
+		echo " $ER El Archivo ${CY}'$SAM'${NC} No existe."
 	fi
 elif [[ $1 == "-v" || $1 == "--version" ]]; then
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
@@ -43,7 +49,7 @@ else
 	# Content:
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
 	DESC="${GR}Desc: Extrae los hashes del archivo ${DCY}SAM${BL} de Windows."
-	USAGE="${GR}Usage: ${CY}dumpsam${NC} [-h|-v] | ${DCY}SAMFile SYSTEMFile${NC}"
+	USAGE="${GR}Usage: ${CY}dumpsam${NC} [-h|-v] | [${DCY}SAMFile SYSTEMFile${NC}]"
 	OPTIONS="${GR}Options:"
 	EXAMPLE="${GR}Examples:"
 	# Replaces:
@@ -62,8 +68,8 @@ else
 	echo
 	echo -e " $OK $OPTIONS${NC}"
 	echo
-	echo -e "	-h              ${BL}Muestra este mensaje de ayuda.${NC}"   | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
-	echo -e "	-v              ${BL}Muestra la version del script.${NC}"   | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-h              ${BL}Muestra este mensaje de ayuda.${NC}" | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-v              ${BL}Muestra la version del script.${NC}" | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
 	echo
 	echo -e " $OK $EXAMPLE${NC}"
 	echo

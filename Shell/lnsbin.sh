@@ -43,7 +43,7 @@ if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 				NAME=$2
 			fi
 		fi
-		#--------------------------------------------------------------------------
+		#---------------------------------------------------------------
 		if [[ -f $FILE && -n $NAME ]]; then
 			if [[ -f /usr/bin/$NAME ]]; then
 				echo -e " $ER Ya existe un comando con el nombre ${CY}'$NAME'${NC}."
@@ -93,12 +93,8 @@ else
 	echo
 	echo -e " $OK $EXAMPLE${NC}"
 	echo
-	echo -e "	${CY}lnsbin${NC} ${DCY}file${NC} ${DBL}command${NC}          ${BL}Selecciona un archivo para crear el comando y se le coloca un nombre.${NC}"                | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}lnsbin${NC} ${DCY}file${NC} ${DBL}command${NC}          ${BL}Selecciona un archivo para crear el comando y se le coloca un nombre.${NC}"
 	echo -e "	${CY}lnsbin${NC} -f ${DCY}file${NC} -c ${DBL}command${NC}    ${BL}Selecciona un archivo para crear el comando y se le coloca un nombre por parametros.${NC}" | sed "s|-|${DCY}-${CY}|g"
-
-	#~ echo -e " $OK ${CY}Usage${BL}:${NC}"
-	#~ echo -e "	${CY}lnsbin ${BL}FileName ${GR}CommandName${NC}"
-	#~ echo -e "	${CY}lnsbin ${BL}-${CY}f ${BL}FileName ${BL}-${CY}c ${GR}CommandName${NC}"
 fi
 
 echo

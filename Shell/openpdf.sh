@@ -8,6 +8,51 @@
 #
 #	openpdf FileName.pdf
 
+function openpdf() {
+	FULL=0
+	OPEN=0
+	INSC=0
+	#-------------------------------------------------------------------
+	# Delete simple parameters
+	params=("$@")
+	new_params=()
+	pos=0
+	for i in "${!params[@]}"
+	do
+		val=${params[$i]}
+		if [[ $val == "-f" || $val == "--full" || $val == "--fullscreen" ]]; then
+			FULL=1
+		elif [[ $val == "-o" || $val == "--open" ]]; then
+			OPEN=1
+		elif [[ $val == "-i" || $val == "--insecure" ]]; then
+			INSC=1
+		else
+			new_params[$pos]=$val
+			((pos++))
+		fi
+	done
+	params=("${new_params[@]}")
+	echo $params, ${params[@]}, $FULL
+	#-------------------------------------------------------------------
+	# Analyze other parameters
+	PDF=""
+	[[ -f ${params[0]} ]] && PDF=${params[0]}
+	#-------------------------------------------------------------------
+	if [[ -f $PDF ]]; then
+		if [[ $FULL == 1 ]]; then
+			firejail firefox "$PDF" --kiosk
+		elif [[ $OPEN == 1 ]]; then
+			open "$PDF"
+		elif [[ $INSC == 1 ]]; then
+			firefox "$PDF"
+		else
+			firejail firefox "$PDF"
+		fi
+	else
+		echo -e " $ER El Archivo ${CY}'$PDF'${NC} No existe."
+	fi
+}
+
 AUTHOR="LawlietJH"
 SCRIPT="OpenPDF"
 VERSION="v1.0"
@@ -25,15 +70,7 @@ ER="${BL}[${RE}!${BL}]${NC}"
 echo
 
 if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
-	SAM=""
-	SYS=""
-	if [[ -n $1 && -n $2 ]]; then
-		SAM=$1
-		SYS=$2
-	fi
-	if [[ -n $SAM && -n $SYS ]]; then
-		impacket-secretsdump -sam $SAM -system $SYS LOCAL
-	fi
+	openpdf "$@"
 elif [[ $1 == "-v" || $1 == "--version" ]]; then
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
 	VERSION=$(echo $VERSION | sed "s|v|${DCY}v${CY}|g; s|\.|${DCY}\.${CY}|g")
@@ -42,8 +79,8 @@ elif [[ $1 == "-v" || $1 == "--version" ]]; then
 else
 	# Content:
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
-	DESC="${GR}Desc: Extrae los hashes del archivo ${DCY}SAM${BL} de Windows."
-	USAGE="${GR}Usage: ${CY}openpdf${NC} [-h|-v] | ${DCY}FileName.pdf${NC}"
+	DESC="${GR}Desc: Abre un ${DCY}PDF${BL} de forma segura con ${DCY}FireJail${BL}."
+	USAGE="${GR}Usage: ${CY}openpdf${NC} [-h|-v] | [-f|-i|-o] [${DCY}FileName.pdf${NC}]"
 	OPTIONS="${GR}Options:"
 	EXAMPLE="${GR}Examples:"
 	# Replaces:
@@ -62,12 +99,18 @@ else
 	echo
 	echo -e " $OK $OPTIONS${NC}"
 	echo
-	echo -e "	-h              ${BL}Muestra este mensaje de ayuda.${NC}"   | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
-	echo -e "	-v              ${BL}Muestra la version del script.${NC}"   | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-h                ${BL}Muestra este mensaje de ayuda.${NC}"               | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-v                ${BL}Muestra la version del script.${NC}"               | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-f, --full        ${BL}Abre el pdf en pantalla completa.${NC}"            | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-i, --insecure    ${BL}Abre el pdf sin _'firejail'_.${NC}"                | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g; s|_'|${DCY}'${CY}|g; s|'_|${DCY}'${BL}|g"
+	echo -e "	-o, --open        ${BL}Abre el pdf con _'open'_ y sin _'firejail'_.${NC}" | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g; s|_'|${DCY}'${CY}|g; s|'_|${DCY}'${BL}|g"
 	echo
 	echo -e " $OK $EXAMPLE${NC}"
 	echo
-	echo -e "	${CY}openpdf ${DCY}FileName.pdf${NC}    ${BL}Abre un ${DCY}PDF${BL} de forma segura con ${DCY}FireJail${BL}.${NC}"
+	echo -e "	${CY}openpdf ${DCY}FileName.pdf${NC}       ${BL}Abre un ${DCY}PDF${BL} de forma segura con ${DCY}FireJail${BL}.${NC}"
+	echo -e "	${CY}openpdf -f ${DCY}FileName.pdf${NC}    ${BL}Abre en Pantalla Completa de Forma segura con ${DCY}FireJail${BL}.${NC}" | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}openpdf -i ${DCY}FileName.pdf${NC}    ${BL}Abre de forma insegura.${NC}"                                            | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}openpdf -o ${DCY}FileName.pdf${NC}    ${BL}Abre con ${DCY}Open${BL}.${NC}"                                          | sed "s|-|${DCY}-${CY}|g"
 fi
 
 echo

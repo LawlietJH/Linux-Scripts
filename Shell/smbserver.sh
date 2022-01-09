@@ -118,7 +118,7 @@ else
 	echo
 	echo -e "	${CY}smbserver${NC}                      ${BL}Inicia el servicio.${NC}"
 	echo -e "	${CY}smbserver${NC} ${DCY}user${NC}                 ${BL}Inicia el servicio con usuario sin contraseña.${NC}"
-	echo -e "	${CY}smbserver${NC} ${DCY}user${NC} ${DBL}passwd${NC}          ${BL}Indica el servicio con usuario y contraseña.${NC}"                | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}smbserver${NC} ${DCY}user${NC} ${DBL}passwd${NC}          ${BL}Indica el servicio con usuario y contraseña.${NC}"
 	echo -e "	${CY}smbserver${NC} -u ${DCY}user${NC} -p ${DBL}passwd${NC}    ${BL}Indica el servicio con usuario y contraseña por parametros.${NC}" | sed "s|-|${DCY}-${CY}|g"
 fi
 
