@@ -21,16 +21,17 @@
 #	smbserver -u UserName
 #	smbserver -u UserName -p Password
 
+AUTHOR="LawlietJH"
 SCRIPT="SMBServer"
-VERSION="1.0"
-DGR="\033[0;32m"
-DBL="\033[0;34m"
-DCY="\033[0;36m"
-RE="\033[1;31m"
-GR="\033[1;32m"
-BL="\033[1;34m"
-CY="\033[1;36m"
-NC="\033[0m"
+VERSION="v1.0"
+DGR="\x1b[0;32m"
+DBL="\x1b[0;34m"
+DCY="\x1b[0;36m"
+RE="\x1b[1;31m"
+GR="\x1b[1;32m"
+BL="\x1b[1;34m"
+CY="\x1b[1;36m"
+NC="\x1b[0m"
 OK="${CY}[${GR}+${CY}]${NC}"
 ER="${BL}[${RE}!${BL}]${NC}"
 
@@ -81,41 +82,44 @@ if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 		fi
 	fi
 elif [[ $1 == "-v" || $1 == "--version" ]]; then
-	echo -e " $OK ${CY}$SCRIPT ${BL}v${CY}$VERSION${NC}"
+	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
+	VERSION=$(echo $VERSION | sed "s|v|${DCY}v${CY}|g; s|\.|${DCY}\.${CY}|g")
+	VER=$(echo $VER | sed "s|: |${DGR}:${NC} |g; s|-|${DCY}-${NC}|g")
+	echo -e " $OK $VER${NC} $VERSION"
 else
-	# Banner SMBServer
-	# SMBServer v1.0: Inicia un recurso compartido en red.
-	# By: LawlietJH
-	#
-	# Usage: smbserver [-h|-v] | [-u username] [-p password]
-	#
-	# Options:
-	#     -h    Show this help message
-	#     -v    Show script version
-	#     -u    Set Username
-	#     -p    Set Password
-	#
-	# Examples: 
-	#   smbserver                     Inicia el servicio
-	#   smbserver user                Inicia el servicio con usuario sin contraseña
-	#   smbserver user passwd         Indica el servicio con usuario y contraseña
-	#   smbserver -u user -p passwd   Indica el servicio con usuario y contraseña por parametros
-	# Help
-	#~ echo -e " $OK ${CY}$SCRIPT ${DCY}v${CY}1${DCY}.${CY}0${NC}"
-	#~ echo
-	nDCY="\x1b[0;36m"
-	nCY="\x1b[1;36m"
-	VER=$(echo $VERSION | sed "s|\.|${nDCY}\.${nCY}|g")
-	echo -e " $OK ${CY}$SCRIPT ${DCY}v${CY}$VER${NC}"
+	# Content:
+	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
+	DESC="${GR}Desc: Inicia un recurso compartido en red por ${DCY}SMB${NC}."
+	USAGE="${GR}Usage: ${CY}smbserver${NC} [-h|-v] | [-u ${DCY}UserName${NC}] [-p ${DCY}Password${NC}]"
+	OPTIONS="${GR}Options:"
+	EXAMPLE="${GR}Examples:"
+	# Replaces:
+	VERSION=$(echo $VERSION | sed "s|v|${DCY}v${CY}|g; s|\.|${DCY}\.${CY}|g")
+	VER=$(echo $VER | sed "s|: |${DGR}:${NC} |g; s|-|${DCY}-${NC}|g")
+	DESC=$(echo $DESC | sed "s|: |${DGR}:${NC} ${BL}|g; s|-'|${DCY}'${CY}|g; s|'-|${DCY}'${BL}|g; s|\.|${DCY}\.${BL}|g")
+	USAGE=$(echo $USAGE | sed "s| \[| ${DBL}\[${NC}|g; s|]|${DBL}]${NC}|g; s|: |${DGR}:${NC} |g; s|-|${DCY}-${CY}|g; s|\||${DBL}\|${NC}|g")
+	OPTIONS=$(echo $OPTIONS | sed "s|:|${DGR}:|g")
+	EXAMPLE=$(echo $EXAMPLE | sed "s|:|${DGR}:|g")
+	# Print:
+	echo -e " $OK $VER${NC} $VERSION"
 	echo
-	echo -e " $OK ${GR}Usage${DGR}:${NC} ${CY}smbserver${NC} ${DBL}[${DCY}-${CY}h${NC}${DBL}|${DCY}-${CY}v${DBL}]${NC} ${DBL}|${NC} ${DBL}[${DCY}-${CY}u${NC} ${DCY}username${DBL}]${NC} ${DBL}[${DCY}-${CY}p${NC} ${DCY}password${DBL}]${NC}"
+	echo -e " $OK $DESC${NC}"
 	echo
-	echo -e " $OK ${GR}Examples${DGR}:${NC}"
-	echo -e "	${CY}smbserver${NC}"
-	echo -e "	${CY}smbserver ${DCY}UserName${NC}"
-	echo -e "	${CY}smbserver ${DCY}UserName ${BL}Password${NC}"
-	echo -e "	${CY}smbserver ${DCY}-${CY}u ${DCY}UserName${NC}"
-	echo -e "	${CY}smbserver ${DCY}-${CY}u ${DCY}UserName ${DCY}-${CY}p ${BL}Password${NC}"
+	echo -e " $OK $USAGE${NC}"
+	echo
+	echo -e " $OK $OPTIONS${NC}"
+	echo
+	echo -e "	-h              ${BL}Muestra este mensaje de ayuda.${NC}"   | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	-v              ${BL}Muestra la version del script.${NC}"   | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	-u, --user      ${BL}Selecciona un nombre de usuario.${NC}" | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-p, --passwd    ${BL}Selecciona una contraseña.${NC}"       | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo
+	echo -e " $OK $EXAMPLE${NC}"
+	echo
+	echo -e "	${CY}smbserver${NC}                      ${BL}Inicia el servicio.${NC}"
+	echo -e "	${CY}smbserver${NC} ${DCY}user${NC}                 ${BL}Inicia el servicio con usuario sin contraseña.${NC}"
+	echo -e "	${CY}smbserver${NC} ${DCY}user${NC} ${DBL}passwd${NC}          ${BL}Indica el servicio con usuario y contraseña.${NC}"                | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}smbserver${NC} -u ${DCY}user${NC} -p ${DBL}passwd${NC}    ${BL}Indica el servicio con usuario y contraseña por parametros.${NC}" | sed "s|-|${DCY}-${CY}|g"
 fi
 
 echo
