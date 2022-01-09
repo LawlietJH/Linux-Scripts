@@ -32,7 +32,6 @@ function openpdf() {
 		fi
 	done
 	params=("${new_params[@]}")
-	echo $params, ${params[@]}, $FULL
 	#-------------------------------------------------------------------
 	# Analyze other parameters
 	PDF=""

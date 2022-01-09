@@ -61,10 +61,10 @@ if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 			if [[ -f $FILE ]]; then
 				setUser $USER $FILE
 			else
-				echo " $ER El Archivo ${CY}'$FILE'${NC} No existe."
+				echo -e " $ER El Archivo ${CY}'$FILE'${NC} No existe."
 			fi
 		else
-			echo " $ER El Usuario ${CY}'$USER'${NC} No existe."
+			echo -e " $ER El Usuario ${CY}'$USER'${NC} No existe."
 		fi
 	fi
 elif [[ $1 == "-v" || $1 == "--version" ]]; then

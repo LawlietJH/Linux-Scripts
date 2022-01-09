@@ -36,9 +36,10 @@ if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 		if [[ -f $SYS ]]; then
 			impacket-secretsdump -sam $SAM -system $SYS LOCAL
 		else
-			echo " $ER El Archivo ${CY}'$SYS'${NC} No existe."
+			echo -e " $ER El Archivo ${CY}'$SYS'${NC} No existe."
+		fi
 	else
-		echo " $ER El Archivo ${CY}'$SAM'${NC} No existe."
+		echo -e " $ER El Archivo ${CY}'$SAM'${NC} No existe."
 	fi
 elif [[ $1 == "-v" || $1 == "--version" ]]; then
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
@@ -49,7 +50,7 @@ else
 	# Content:
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
 	DESC="${GR}Desc: Extrae los hashes del archivo ${DCY}SAM${BL} de Windows."
-	USAGE="${GR}Usage: ${CY}dumpsam${NC} [-h|-v] | [${DCY}SAMFile SYSTEMFile${NC}]"
+	USAGE="${GR}Usage: ${CY}dumpsam${NC} [-h|-v] | [${DCY}SAM_File SYSTEM_File${NC}]"
 	OPTIONS="${GR}Options:"
 	EXAMPLE="${GR}Examples:"
 	# Replaces:
