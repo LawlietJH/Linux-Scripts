@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# [+] By: LawlietJH - lnsbin v1.0
+# [+] By: LawlietJH - lnsbin v1.1
 #
 # [+] Desc: Crea un link en la ruta /usr/bin de un archivo,
 #           permitiendo ejecutarlo directamente como comando.
@@ -8,10 +8,13 @@
 # [+] Usage:
 #	lnsbin FileName CommandName
 #	lnsbin -f FileName -c CommandName
+#	lnsbin -f FileName -c CommandName -l
+#	lnsbin -f FileName -c CommandName -r
+#	lnsbin FileName CommandName -l -r
 
 AUTHOR="LawlietJH"
 SCRIPT="Lnsbin"
-VERSION="v1.0"
+VERSION="v1.1"
 DGR="\x1b[0;32m"
 DBL="\x1b[0;34m"
 DCY="\x1b[0;36m"
@@ -29,27 +32,37 @@ if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
 	if [[ $EUID == "1000" ]]; then
 		echo -e " $ER Necesitas Permisos de administrador..."
 	else
+		# Constantes para almacenar los Parametros
 		FILE=""
-		NAME=""
-		if [[ $1 == "-f" || $1 == "--file" || $1 == "--filename" ]] && [[ -n $2 ]] && [[ $3 == "-c" || $3 == "--command" || $3 == "--commandname" ]] && [[ -n $4 ]]; then
-			FILE=$2
-			NAME=$4
-		elif [[ $1 == "-c" || $1 == "--command" || $1 == "--commandname" ]] && [[ -n $2 ]] && [[ $3 == "-f" || $3 == "--file" || $3 == "--filename" ]] && [[ -n $4 ]]; then
-			FILE=$4
-			NAME=$2
-		else
-			if [[ -n $1 && -n $2 ]]; then
-				FILE=$1
-				NAME=$2
-			fi
+		COMMAND=""
+		LOCAL=false
+		REPLACE=false
+		SHIFTED=()
+		# Extraccion de Parametros
+		while [[ $# -gt 0 ]]; do
+			case $1 in
+				-f|--file)    FILE=$2;      shift; shift;;
+				-c|--command) COMMAND=$2;   shift; shift;;
+				-l|--local)   LOCAL=true;   shift;;
+				-r|--replace) REPLACE=true; shift;;
+				*) SHIFTED+=("$1"); shift;;
+			esac
+		done
+		if [[ -z $FILE && -z $COMMAND ]]; then
+			FILE=${SHIFTED[0]}
+			COMMAND=${SHIFTED[1]}
 		fi
 		#---------------------------------------------------------------
-		if [[ -f $FILE && -n $NAME ]]; then
-			if [[ -f /usr/bin/$NAME ]]; then
-				echo -e " $ER Ya existe un comando con el nombre ${CY}'$NAME'${NC}."
+		if [[ -f $FILE && -n $COMMAND ]]; then
+			if [[ -f /usr/bin/$COMMAND ]]; then
+				echo -e " $ER Ya existe un comando con el nombre ${CY}'$COMMAND'${NC}."
 			else
-				ln -s $(pwd)/$FILE /usr/bin/$NAME
-				echo -e " $OK El commando '${CY}$NAME${NC}' ⇒ ${BL}$(pwd)/${CY}$FILE${NC}"
+				if   [[ $LOCAL == true  && $REPLACE == true  ]]; then ln -sf $(pwd)/$FILE /usr/local/bin/$COMMAND
+				elif [[ $LOCAL == true  && $REPLACE == false ]]; then ln -s  $(pwd)/$FILE /usr/local/bin/$COMMAND
+				elif [[ $LOCAL == false && $REPLACE == true  ]]; then ln -sf $(pwd)/$FILE /usr/bin/$COMMAND
+				elif [[ $LOCAL == false && $REPLACE == false ]]; then ln -s  $(pwd)/$FILE /usr/bin/$COMMAND
+				fi
+				echo -e " $OK El commando '${CY}$COMMAND${NC}' ⇒ ${BL}$(pwd)/${CY}$FILE${NC}"
 				echo -e "     Ha sido creado con exito."
 			fi
 		else
@@ -67,7 +80,7 @@ else
 	# Content:
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
 	DESC="${GR}Desc: Crea un link de un archivo en la ruta -'/usr/bin'- permitiendo ejecutarlo directamente como comando."
-	USAGE="${GR}Usage: ${CY}lnsbin${NC} [-h|-v] | [-f ${DCY}Filename${NC}] [-c ${DCY}CommandName${NC}]"
+	USAGE="${GR}Usage: ${CY}lnsbin${NC} [-h|-v] | [-f ${DCY}Filename${NC} -c ${DCY}CommandName${NC}] [-l] [-r]"
 	OPTIONS="${GR}Options:"
 	EXAMPLE="${GR}Examples:"
 	# Replaces:
@@ -86,15 +99,20 @@ else
 	echo
 	echo -e " $OK $OPTIONS${NC}"
 	echo
-	echo -e "	-h               ${BL}Muestra este mensaje de ayuda.${NC}"   | sed "s|-|${DCY}-${CY}|g"
-	echo -e "	-v               ${BL}Muestra la version del script.${NC}"   | sed "s|-|${DCY}-${CY}|g"
-	echo -e "	-f, --file       ${BL}Selecciona un archivo.${NC}"           | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
-	echo -e "	-c, --command    ${BL}Selecciona un nombre de comando.${NC}" | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-h               ${BL}Muestra este mensaje de ayuda.${NC}"                                     | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	-v               ${BL}Muestra la version del script.${NC}"                                     | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	-f, --file       ${BL}Selecciona un archivo.${NC}"                                             | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-c, --command    ${BL}Selecciona un nombre de comando.${NC}"                                   | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-l, --local      ${BL}Selecciona la carpeta -'/usr/local/bin'- en lugar de -'/usr/bin'-.${NC}" | sed "s|: |${DGR}:${NC} ${BL}|g; s|-'|${DCY}'${CY}|g; s|'-|${DCY}'${BL}|g; s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
+	echo -e "	-r, --remote     ${BL}Si ya existe el enlace lo remplaza.${NC}"                                | sed "s|-|${DCY}-${CY}|g; s|,|${DCY},${NC}|g"
 	echo
 	echo -e " $OK $EXAMPLE${NC}"
 	echo
-	echo -e "	${CY}lnsbin${NC} ${DCY}file${NC} ${DBL}command${NC}          ${BL}Selecciona un archivo para crear el comando y se le coloca un nombre.${NC}"
-	echo -e "	${CY}lnsbin${NC} -f ${DCY}file${NC} -c ${DBL}command${NC}    ${BL}Selecciona un archivo para crear el comando y se le coloca un nombre por parametros.${NC}" | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}lnsbin${NC} ${DCY}file${NC} ${DBL}command${NC}            ${BL}Selecciona un archivo para crear el comando.${NC}"
+	echo -e "	${CY}lnsbin${NC} -f ${DCY}file${NC} -c ${DBL}command${NC}      ${BL}Selecciona un archivo para crear el comando.${NC}"                               | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}lnsbin${NC} -f ${DCY}file${NC} -c ${DBL}command${NC} -l   ${BL}Selecciona un archivo para crear el comando alojado en -'/usr/local/bin'-.${NC}" | sed "s|-'|${DCY}'${CY}|g; s|'-|${DCY}'${BL}|g; s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}lnsbin${NC} -f ${DCY}file${NC} -c ${DBL}command${NC} -r   ${BL}Selecciona un archivo para crear el comando y lo remplaza si ya existe.${NC}"    | sed "s|-|${DCY}-${CY}|g"
+	echo -e "	${CY}lnsbin${NC} ${DCY}file${NC} ${DBL}command${NC} -l -r" | sed "s|-|${DCY}-${CY}|g"
 fi
 
 echo
