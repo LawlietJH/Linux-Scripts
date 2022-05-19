@@ -4,6 +4,8 @@
 #
 # [+] Desc: Extrae los hashes del archivo SAM de Windows.
 #
+# [+] Dependencias: Impacket-SecretsDump
+#
 # [+] Usages:
 #
 #	dumpsam SAM SYSTEM

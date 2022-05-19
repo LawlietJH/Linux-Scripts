@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# [+] By: LawlietJH - OpenPDF v1.0
+# [+] By: LawlietJH - OpenPDF v1.1
 #
 # [+] Desc: Abre un PDF de forma segura con FireJail.
 #
@@ -9,77 +9,52 @@
 #	openpdf FileName.pdf
 
 function openpdf() {
-	FULL=0
-	OPEN=0
-	INSC=0
-	#-------------------------------------------------------------------
-	# Delete simple parameters
-	params=("$@")
-	new_params=()
-	pos=0
-	for i in "${!params[@]}"
-	do
-		val=${params[$i]}
-		if [[ $val == "-f" || $val == "--full" || $val == "--fullscreen" ]]; then
-			FULL=1
-		elif [[ $val == "-o" || $val == "--open" ]]; then
-			OPEN=1
-		elif [[ $val == "-i" || $val == "--insecure" ]]; then
-			INSC=1
-		else
-			new_params[$pos]=$val
-			((pos++))
-		fi
+	# Constantes para almacenar los Parametros
+	FILE=""
+	FULL=false
+	OPEN=false
+	INSC=false
+	SHIFTED=()
+	# Extraccion de Parametros
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+			-f|--full|--fullscreen) FULL=true; shift;;
+			-o|--open)              OPEN=true; shift;;
+			-i|--insecure)          INSC=true; shift;;
+			*) SHIFTED+=("$1"); shift;;
+		esac
 	done
-	params=("${new_params[@]}")
+	FILE=${SHIFTED[0]}
 	#-------------------------------------------------------------------
-	# Analyze other parameters
-	PDF=""
-	[[ -f ${params[0]} ]] && PDF=${params[0]}
-	#-------------------------------------------------------------------
-	if [[ -f $PDF ]]; then
-		if [[ $FULL == 1 ]]; then
-			firejail firefox "$PDF" --kiosk
-		elif [[ $OPEN == 1 ]]; then
-			open "$PDF"
-		elif [[ $INSC == 1 ]]; then
-			firefox "$PDF"
+	if [[ -f $FILE ]]; then
+		if [[ $FULL == true ]]; then
+			echo -e " $OK Command: firejail --quiet firefox _'$FILE'_${NC} --kiosk" | sed "s|_'|${DCY}'${CY}|g; s|'_|${DCY}'${BL}|g"
+			echo
+			firejail --quiet firefox "$FILE" --kiosk
+		elif [[ $OPEN == true ]]; then
+			echo -e " $OK Command: open _'$FILE'_${NC}" | sed "s|_'|${DCY}'${CY}|g; s|'_|${DCY}'${BL}|g"
+			echo
+			open "$FILE"
+		elif [[ $INSC == true ]]; then
+			echo -e " $OK Command: firefox _'$FILE'_${NC}" | sed "s|_'|${DCY}'${CY}|g; s|'_|${DCY}'${BL}|g"
+			echo
+			firefox "$FILE"
 		else
-			firejail firefox "$PDF"
+			echo -e " $OK Command: firejail --quiet firefox _'$FILE'_${NC}" | sed "s|_'|${DCY}'${CY}|g; s|'_|${DCY}'${BL}|g"
+			echo
+			firejail --quiet firefox "$FILE"
 		fi
 	else
-		echo -e " $ER El Archivo ${CY}'$PDF'${NC} No existe."
+		echo -e " $ER El Archivo ${CY}'$FILE'${NC} No existe."
+		help
 	fi
 }
 
-AUTHOR="LawlietJH"
-SCRIPT="OpenPDF"
-VERSION="v1.0"
-DGR="\x1b[0;32m"
-DBL="\x1b[0;34m"
-DCY="\x1b[0;36m"
-RE="\x1b[1;31m"
-GR="\x1b[1;32m"
-BL="\x1b[1;34m"
-CY="\x1b[1;36m"
-NC="\x1b[0m"
-OK="${CY}[${GR}+${CY}]${NC}"
-ER="${BL}[${RE}!${BL}]${NC}"
-
-echo
-
-if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
-	openpdf "$@"
-elif [[ $1 == "-v" || $1 == "--version" ]]; then
-	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
-	VERSION=$(echo $VERSION | sed "s|v|${DCY}v${CY}|g; s|\.|${DCY}\.${CY}|g")
-	VER=$(echo $VER | sed "s|: |${DGR}:${NC} |g; s|-|${DCY}-${NC}|g")
-	echo -e " $OK $VER${NC} $VERSION"
-else
+function help() {
 	# Content:
 	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
 	DESC="${GR}Desc: Abre un ${DCY}PDF${BL} de forma segura con ${DCY}FireJail${BL}."
-	USAGE="${GR}Usage: ${CY}openpdf${NC} [-h|-v] | [-f|-i|-o] [${DCY}FileName.pdf${NC}]"
+	USAGE="${GR}Usage: ${CY}openpdf${NC} [-h|-v] | [${DCY}FileName.pdf${NC}] [-f|-i|-o]"
 	OPTIONS="${GR}Options:"
 	EXAMPLE="${GR}Examples:"
 	# Replaces:
@@ -110,6 +85,33 @@ else
 	echo -e "	${CY}openpdf -f ${DCY}FileName.pdf${NC}    ${BL}Abre en Pantalla Completa de Forma segura con ${DCY}FireJail${BL}.${NC}" | sed "s|-|${DCY}-${CY}|g"
 	echo -e "	${CY}openpdf -i ${DCY}FileName.pdf${NC}    ${BL}Abre de forma insegura.${NC}"                                            | sed "s|-|${DCY}-${CY}|g"
 	echo -e "	${CY}openpdf -o ${DCY}FileName.pdf${NC}    ${BL}Abre con ${DCY}Open${BL}.${NC}"                                          | sed "s|-|${DCY}-${CY}|g"
+} 
+
+AUTHOR="LawlietJH"
+SCRIPT="OpenPDF"
+VERSION="v1.1"
+DGR="\x1b[0;32m"
+DBL="\x1b[0;34m"
+DCY="\x1b[0;36m"
+RE="\x1b[1;31m"
+GR="\x1b[1;32m"
+BL="\x1b[1;34m"
+CY="\x1b[1;36m"
+NC="\x1b[0m"
+OK="${CY}[${GR}+${CY}]${NC}"
+ER="${BL}[${RE}!${BL}]${NC}"
+
+echo
+
+if [[ $1 != "-h" && $1 != "--help" && $1 != "-v" && $1 != "--version" ]]; then
+	openpdf "$@"
+elif [[ $1 == "-v" || $1 == "--version" ]]; then
+	VER="${GR}By: ${CY}$AUTHOR${NC} - ${CY}$SCRIPT${NC}"
+	VERSION=$(echo $VERSION | sed "s|v|${DCY}v${CY}|g; s|\.|${DCY}\.${CY}|g")
+	VER=$(echo $VER | sed "s|: |${DGR}:${NC} |g; s|-|${DCY}-${NC}|g")
+	echo -e " $OK $VER${NC} $VERSION"
+else
+	help
 fi
 
 echo
