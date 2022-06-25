@@ -12,20 +12,26 @@ function mkt(){
 	done
 	DIR=${SHIFTED[1]}
 	if [[ -n $DIR ]]; then
-		mkdir $DIR
-		cd $DIR
-	fi
-	if [[ $CHALLENGE == true ]]; then
-		echo '# Challenge: '$DIR > data.txt
-		echo '# Challenge: '$DIR > flag.txt
-		echo 'Flag: ' >> flag.txt
+		if [[ ! -d $DIR ]]; then
+			mkdir $DIR
+			cd $DIR
+			if [[ $CHALLENGE == true ]]; then
+				echo '# Challenge: '$DIR > data.txt
+				echo '# Challenge: '$DIR > flag.txt
+				echo 'Flag: ' >> flag.txt
+			else
+				mkdir {content,exploits,nmap}
+				cd content
+				echo '# Machine: '$DIR > data.txt
+				echo '# Machine: '$DIR > flags.txt
+				echo 'User Flag: ' >> flags.txt
+				echo 'Root Flag: ' >> flags.txt
+			fi
+		else
+			echo 'Ya existe el directorio: '$DIR
+		fi
 	else
-		mkdir {content,exploits,nmap}
-		cd content
-		echo '# Machine: '$DIR > data.txt
-		echo '# Machine: '$DIR > flags.txt
-		echo 'User Flag: ' >> flags.txt
-		echo 'Root Flag: ' >> flags.txt
+		echo 'Se requiere el nombre de un Directorio...'
 	fi
 }
 
