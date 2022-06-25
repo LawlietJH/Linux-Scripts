@@ -1,11 +1,20 @@
-# Set Target:
+# IP Validation (port is optional)
+function isValidIP(){
+        ip='^((2([0-4][0-9]|5[0-5])?|[0-1]?[0-9]{1,2})?\.){3}'
+        ip+='((2([0-4][0-9]|5[0-5])?|[0-1]?[0-9]{1,2})?)'
+        limit='6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5])))'
+        port='(:(([0-9]{1,4})|([0-5]?[0-9]{1,4})|('$limit')))?$'
+        [[ $1 =~ $ip$port ]] && return 1 || return 0
+}
+
+# set Target:
 function setTarget(){
         ip_address=$1
         machine_name=$2
         echo "$ip_address $machine_name" > ~/target.tmp
 }
 
-# Get Target:
+# get Target:
 function getTarget(){
         # Copy: echo -n 'xD' | xclip -selection clipboard
         # Paste: xclip -selection clipboard -o
@@ -13,7 +22,9 @@ function getTarget(){
         temp2=$(cat ~/target.tmp | awk '{print $2}')
         ip_address=""
         machine_name=""
-        if [[ $temp1 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        isValidIP $temp1
+        isvalid=$?
+        if [[ $isvalid -eq 1 ]]; then
                 ip_address=$temp1
                 if [[ -n $temp2 ]]; then
                         machine_name=$temp2
@@ -21,7 +32,9 @@ function getTarget(){
         else
                 machine_name=$temp1
         fi
-        if [[ $temp2 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        isValidIP $temp2
+        isvalid=$?
+        if [[ $isvalid -eq 1 ]]; then
                 ip_address=$temp2
         fi
         if [[ -n $1 ]]; then
@@ -57,3 +70,4 @@ function getTarget(){
 
 alias settarget='setTarget'
 alias gettarget='getTarget'
+alias isvalidip='isValidIP'
