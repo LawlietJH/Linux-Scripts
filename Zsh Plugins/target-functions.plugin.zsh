@@ -11,15 +11,15 @@ function isValidIP(){
 function setTarget(){
         ip_address=$1
         machine_name=$2
-        echo "$ip_address $machine_name" > ~/target.tmp
+        echo "$ip_address $machine_name" > ~/.target
 }
 
 # get Target:
 function getTarget(){
         # Copy: echo -n 'xD' | xclip -selection clipboard
         # Paste: xclip -selection clipboard -o
-        temp1=$(cat ~/target.tmp | awk '{print $1}')
-        temp2=$(cat ~/target.tmp | awk '{print $2}')
+        temp1=$(cat ~/.target | awk '{print $1}')
+        temp2=$(cat ~/.target | awk '{print $2}')
         ip_address=""
         machine_name=""
         IP=false
@@ -94,8 +94,6 @@ function getTarget(){
                         echo "$ip_address"
                 elif [[ -n $machine_name && $IP == false ]] || [[ -n $machine_name && $NAME == true ]]; then
                         echo "$machine_name"
-                else
-                        echo "No Target"
                 fi
         else
                 if [[ -n $ip_address && -n $machine_name && $IP == true && $NAME == true ]]; then
